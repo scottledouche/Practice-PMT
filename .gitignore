@@ -1,5 +1,8 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -11,17 +14,14 @@ public class Main {
 	public static void main(String[] args) {			
 		
 		try {
-			File file = new File("rearrangeProbInput.txt");                                     // Opens the file to be read
+			File file = new File("rearrangeProbInput.txt");                                    // Opens the file to be read
 			Scanner read = new Scanner(file);            
-			String[] lineArray;                                                                // Will hold the number
 			int i = 0;
 
 			while(read.hasNext()) {                                                            // Reads the file as long as there are lines
 				String line = read.nextLine();				                                   // The line that is currently being read
-				lineArray = line.split("Line #" + (i+1) + ": ");                               // Splits line so only the numbers are in the array
-				int parsedNum = Integer.parseInt(lineArray[1]);                                // Converts the number into an integer
-				System.out.println("Output #" + (i+1) + ": " + RearrangeToBiggest(parsedNum)); // Passes parsedNum to be rearranged and prints
-				i++;
+				line = line.substring(line.indexOf(": ") + 2, line.length());             // Splits line so only the numbers are in the array
+				System.out.println("Output #" + i++ + ": " + RearrangeToBiggest(line)); // Passes parsedNum to be rearranged and prints
 			}
 			read.close();                                                                      // Closes the file
 		}
@@ -30,36 +30,18 @@ public class Main {
 		}
 	}
 	
-	public static int RearrangeToBiggest(int numIn) {		 
+	public static int RearrangeToBiggest(String input) {		 
 		
-		int[] digit;                  // Will hold the individual digits of the number 
-		
-		if(numIn > 0 && numIn < 1000) // Initializes digit length to 3 if smaller than 1000
-			digit = new int[3];
-		else                          // Initializes digit length to 4 if larger than 1000
-			digit = new int[4];
-		
-		int i = digit.length-1;       // Initializes i to whatever digit ends up being initialized as
-		while(i >= 0) {	              // Works backwards to individualize the digits of numIn
-			digit[i] = numIn % 10;    // Makes digit the remainder when divided by 10 (Ex. 6859 / 10 = 685 R9)
-			numIn /= 10;              // Divides numIn by 10 to move to the next index
-			i--;
+		List<Character> chars = new ArrayList<Character>();
+		for (char c : input.toCharArray()) {
+			chars.add(c);
 		}
 		
-		// Typical bubble sort algorithm going in descending order
-		for (int j = (digit.length - 1); j >= 0; j--) {
-			for (int k = 1; k <= j; k++) {
-				if (digit[k-1] < digit[k]) {
-					int temp = digit[k-1];
-					digit[k-1] = digit[k];
-					digit[k] = temp;
-				}	
-			}
-		}
-
-	    StringBuilder sb = new StringBuilder(digit.length);	// Initializes the StringBuilder    
-		for (int j : digit)                                 // Goes through the newly sorted digit
-		    sb.append(Integer.toString(j));                 // Builds digit into a String
+		Collections.sort(chars, Collections.reverseOrder());
+		
+	    StringBuilder sb = new StringBuilder(chars.size());	// Initializes the StringBuilder    
+		for (char j : chars)                                 // Goes through the newly sorted digit
+		    sb.append(Character.toString(j));                 // Builds digit into a String
 
 		return Integer.parseInt(sb.toString());             // Returns the integer value of the String
 	}
